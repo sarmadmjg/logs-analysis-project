@@ -10,13 +10,12 @@ import datetime
 from logs_printer import print_table
 
 
-def top_articles(cur, lim=-1):
+def top_articles(cur, lim=3):
     """analyze the most visited articles
 
     Args:
         cur (cursor): a cursor connected to the news database
-        lim (int, optional): the max number of returned articles,
-                             negative numbers mean return all
+        lim (int, optional): the max number of returned articles
 
     Returns:
         (headers, result):
@@ -25,56 +24,57 @@ def top_articles(cur, lim=-1):
                            sorted by views in desc order
     """
     query = """
-        select article_title, count(*) as views
-        from linkedlog
-        group by article_title
+        select title, count(*) as views
+        from log, articles
+        where log.path = '/article/' || articles.slug
+        group by title
         order by views desc
-        {}
-        """.format('limit ' + str(lim) if lim >= 0 else '')
+        limit %s
+        """
 
-    cur.execute(query)
+    cur.execute(query, (lim,))
     headers = ('Article', 'Views')
     return (headers, cur.fetchall())
 
 
-def top_authors(cur, lim=-1):
+def top_authors(cur):
     """analyze the most popular authors by article visits
 
     Args:
         cur (cursor): a cursor connected to the news database
-        lim (int, optional): the max number of returned articles,
-                             negative numbers mean return all
 
     Returns:
-        list: a list of the top authors, sorted by popularity in desc order
+        (headers, result):
+                headers (tuple): Common header names
+                result (list): The top authors (as tuples)
+                               sorted by views in desc order
     """
     query = """
-        select author_name,
-               count(*) as views
-        from linkedlog
-        group by author_name, author_id
+        select authors.name, count(*) as views
+        from log, articles, authors
+        where log.path = '/article/' || articles.slug
+            and articles.author = authors.id
+        group by authors.name, authors.id
         order by views desc
-        {}
-        """.format('limit ' + str(lim) if lim >= 0 else '')
+        """
 
     cur.execute(query)
     headers = ('Author', 'Views')
     return (headers, cur.fetchall())
 
 
-def days_high_error(cur, ratio=0.01, lim=-1):
+def days_high_error(cur, threashold=0.01):
     """Identify the days with high error ratios
 
     Args:
         cur (cursor): a cursor connected to the news database
-        ratio (float, optional): between 0.0 and 1.0
+        threashold (float, optional): between 0.0 and 1.0
                                  the minimum ratio of errors/total requests
-        lim (int, optional): the max number of returned articles
-                             negative numbers mean return all
 
     Returns:
-        list: a list of the days with high error ratio,
-              sorted by percentage of errors in desc order
+        (headers, result):
+            headers (tuple): Common header names
+            result (list): a list of the days with high error ratio
     """
 
     # A few remarks on this query:
@@ -84,18 +84,16 @@ def days_high_error(cur, ratio=0.01, lim=-1):
     #       we have to rewrite the functions
     query = """
         select date(time) as day,
-               round((count(*) filter (where status >= '400')::float
-                      / count(*)
-                      * 100)::numeric, 2) || '%' as e_ratio
+               count(*) filter (where status >= '400')::float
+                      / count(*) as e_ratio
         from log
         group by day
         having (count(*) filter (where status >= '400')::float
-                    / count(*)) > {0}
+                    / count(*)) > %s
         order by day
-        {1}
-        """.format(ratio, 'limit ' + str(lim) if lim >= 0 else '')
+        """
 
-    cur.execute(query)
+    cur.execute(query, (threashold,))
     headers = ('Date', 'Errors')
     return (headers, cur.fetchall())
 
@@ -122,16 +120,14 @@ def main():
     print_table(*report, title)
 
     # Top authors
-    num = -1
     title = 'Top Authors of All Time'
-    report = top_authors(cur, num)
+    report = top_authors(cur)
     print_table(*report, title)
 
     # Bad days
     threashold = 0.01
-    num = -1
     title = 'Days with High Ratio of Errors'
-    report = days_high_error(cur, threashold, num)
+    report = days_high_error(cur, threashold)
     print_table(*report, title)
 
     # Close the connection to db

@@ -21,7 +21,7 @@ def setup(cur):
                 authors.id as author_id,
                 authors.name as author_name
         from log, articles, authors
-        where log.path like ('/article/' || articles.slug || '%')
+        where log.path = ('/article/' || articles.slug)
               and articles.author = authors.id
         """
 
