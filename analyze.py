@@ -18,7 +18,15 @@ def top_articles(cur, lim = -1):
     Returns:
         list: a list of the most visited articles, sorted by popularity in desc order
     """
-    pass
+    query = """
+        select article_title, author_name, count(*) as visits from linkedlog
+            group by article_title, author_name
+            order by visits desc
+            {}
+        """.format('limit ' + str(lim) if lim >= 0 else '')
+
+    cur.execute(query)
+    return cur.fetchall()
 
 
 def top_authors(cur, lim = -1):
@@ -58,6 +66,11 @@ def main():
     # Create all the required views and commit changes
     setupdb.setup(cur)
     db.commit()
+
+    # <---------------- Logs ---------------->
+    # Top articles
+    report = top_articles(cur, 3)
+    print(report)
 
     # Close the connection to db
     db.close()
