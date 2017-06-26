@@ -122,7 +122,7 @@ def main():
     print_table(*report, title)
 
     # Top authors
-    num = 3
+    num = -1
     title = 'Top Authors of All Time'
     report = top_authors(cur, num)
     print_table(*report, title)

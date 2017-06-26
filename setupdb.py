@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Create Views on DB that the app might require
 """
 
