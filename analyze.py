@@ -6,6 +6,7 @@ A project for the Udacity Full Stack Nano Degree Program
 
 import psycopg2
 import setupdb
+import tabulate
 
 
 def top_articles(cur, lim = -1):
@@ -16,17 +17,20 @@ def top_articles(cur, lim = -1):
         lim (int, optional): the max number of returned articles, negative numbers mean return all
 
     Returns:
-        list: a list of the most visited articles, sorted by popularity in desc order
+        (headers, result):
+            headers (tuple): Common header names
+            result (list): The most visited articles (as tuples), sorted by views in desc order
     """
     query = """
-        select article_title, author_name, count(*) as visits from linkedlog
-            group by article_title, author_name
+        select article_title, count(*) as visits from linkedlog
+            group by article_title
             order by visits desc
             {}
         """.format('limit ' + str(lim) if lim >= 0 else '')
 
     cur.execute(query)
-    return cur.fetchall()
+    headers = ('Article Title', 'Views')
+    return (headers, cur.fetchall())
 
 
 def top_authors(cur, lim = -1):
@@ -40,14 +44,15 @@ def top_authors(cur, lim = -1):
         list: a list of the top authors, sorted by popularity in desc order
     """
     query = """
-        select author_name, count(*) as visits from linkedlog
+        select author_id, author_name, count(*) as visits from linkedlog
             group by author_name, author_id
             order by visits desc
             {}
         """.format('limit ' + str(lim) if lim >= 0 else '')
 
     cur.execute(query)
-    return cur.fetchall()
+    headers = ('Author\'s ID', 'Author\'s Name', 'Views')
+    return (headers, cur.fetchall())
 
 
 def days_high_error(cur, ratio = 0.01, lim = -1):
@@ -78,7 +83,8 @@ def days_high_error(cur, ratio = 0.01, lim = -1):
         """.format(ratio, 'limit ' + str(lim) if lim >= 0 else '')
 
     cur.execute(query)
-    return cur.fetchall()
+    headers = ('Date', 'Error Ratio')
+    return (headers, cur.fetchall())
 
 
 def main():
@@ -95,15 +101,15 @@ def main():
     # <---------------- Logs ---------------->
     # Top articles
     report = top_articles(cur, 3)
-    print(report)
+    tabulate.table_query(report[0], report[1])
 
     # Top authors
     report = top_authors(cur, 3)
-    print(report)
+    tabulate.table_query(report[0], report[1])
 
     # Bad days
     report = days_high_error(cur, 0.01, 10)
-    print(report)
+    tabulate.table_query(report[0], report[1])
 
     # Close the connection to db
     db.close()
