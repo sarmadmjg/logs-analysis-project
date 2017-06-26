@@ -24,10 +24,11 @@ def top_articles(cur, lim=-1):
                            sorted by views in desc order
     """
     query = """
-        select article_title, count(*) as views from linkedlog
-            group by article_title
-            order by views desc
-            {}
+        select article_title, count(*) as views
+        from linkedlog
+        group by article_title
+        order by views desc
+        {}
         """.format('limit ' + str(lim) if lim >= 0 else '')
 
     cur.execute(query)
@@ -35,25 +36,28 @@ def top_articles(cur, lim=-1):
     return (headers, cur.fetchall())
 
 
-def top_authors(cur, lim = -1):
+def top_authors(cur, lim=-1):
     """analyze the most popular authors by article visits
 
     Args:
         cur (cursor): a cursor connected to the news database
-        lim (int, optional): the max number of returned articles, negative numbers mean return all
+        lim (int, optional): the max number of returned articles,
+                             negative numbers mean return all
 
     Returns:
         list: a list of the top authors, sorted by popularity in desc order
     """
     query = """
-        select author_id, author_name, count(*) as visits from linkedlog
-            group by author_name, author_id
-            order by visits desc
-            {}
+        select author_name,
+               count(*) as views
+        from linkedlog
+        group by author_name, author_id
+        order by views desc
+        {}
         """.format('limit ' + str(lim) if lim >= 0 else '')
 
     cur.execute(query)
-    headers = ('Author\'s ID', 'Author\'s Name', 'Views')
+    headers = ('Author', 'Views')
     return (headers, cur.fetchall())
 
 
