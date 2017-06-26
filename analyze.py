@@ -39,7 +39,15 @@ def top_authors(cur, lim = -1):
     Returns:
         list: a list of the top authors, sorted by popularity in desc order
     """
-    pass
+    query = """
+        select author_name, count(*) as visits from linkedlog
+            group by author_name, author_id
+            order by visits desc
+            {}
+        """.format('limit ' + str(lim) if lim >= 0 else '')
+
+    cur.execute(query)
+    return cur.fetchall()
 
 
 def days_high_error(cur, ratio = 0.01, lim = -1):
@@ -70,6 +78,10 @@ def main():
     # <---------------- Logs ---------------->
     # Top articles
     report = top_articles(cur, 3)
+    print(report)
+
+    # Top authors
+    report = top_authors(cur, 3)
     print(report)
 
     # Close the connection to db
