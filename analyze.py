@@ -4,7 +4,8 @@ Analyze the visiting logs of a blog
 A project for the Udacity Full Stack Nano Degree Program
 """
 
-def top-articles(cur, lim = -1):
+
+def top_articles(cur, lim = -1):
     """analyze the most visited articles
 
     Args:
@@ -17,7 +18,7 @@ def top-articles(cur, lim = -1):
     pass
 
 
-def top-authors(cur, lim = -1):
+def top_authors(cur, lim = -1):
     """analyze the most popular authors by article visits
 
     Args:
@@ -30,7 +31,7 @@ def top-authors(cur, lim = -1):
     pass
 
 
-def days-high-error(cur, ratio = 0.01, lim = -1):
+def days_high_error(cur, ratio = 0.01, lim = -1):
     """Identify the days with high error ratios
 
     Args:
