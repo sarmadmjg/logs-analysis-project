@@ -55,8 +55,9 @@ def main():
     db = psycopg2.connect(dbname='news')
     cur = db.cursor()
 
-    # Create all the required views
+    # Create all the required views and commit changes
     setupdb.setup(cur)
+    db.commit()
 
     # Close the connection to db
     db.close()
