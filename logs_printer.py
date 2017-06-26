@@ -12,7 +12,7 @@ def print_table(headers, rows, title=''):
     """
     vert_sep = '|'
     hor_sep = '-'
-    col_padding = 2
+    padding = 2
 
     print()
     print(title)
@@ -33,8 +33,8 @@ def print_table(headers, rows, title=''):
                                 for x in range(len(rows))]))
 
     # Choose the max width for each col from the header and rows, add padding
-    col_widths = [max(header_widths[i],
-                      rows_widths[i]) + col_padding for i in range(ln)]
+    col_widths = [max(header_widths[i], rows_widths[i]) +
+                  (padding * 2) for i in range(ln)]
 
     # Construct a horizontal ruler
     hor_line = vert_sep.join([hor_sep * col_widths[i] for i in range(ln)])
@@ -51,7 +51,9 @@ def print_table(headers, rows, title=''):
     # Construnt and print the rows
     for row in rows:
         row_str = vert_sep.join(
-                    ['{:<{width}}'.format(str(row[i]), width=col_widths[i])
+                    ['{:<{width}}'
+                        .format(' ' * padding +
+                                str(row[i]), width=col_widths[i])
                      for i in range(ln)])
         print(row_str)
 
