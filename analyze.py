@@ -61,7 +61,24 @@ def days_high_error(cur, ratio = 0.01, lim = -1):
     Returns:
         list: a list of the days with high error ratio, sorted by percentage of errors in desc order
     """
-    pass
+
+    # A few remarks on this query:
+    # 1---  casting the first count to float is necesary bc
+    #       psql doesn't cast automatically when dividing integers
+    # 2---  having is evaluated before the aggregations, so
+    #       we can't use the alias (e_ratio) in having.
+    query = """
+        select date(time) as day,
+            count(*) filter (where status >= '400')::float / count(*) as e_ratio
+            from log
+            group by day
+            having (count(*) filter (where status >= '400')::float / count(*)) > {0}
+            order by day
+            {1}
+        """.format(ratio, 'limit ' + str(lim) if lim >= 0 else '')
+
+    cur.execute(query)
+    return cur.fetchall()
 
 
 def main():
@@ -82,6 +99,10 @@ def main():
 
     # Top authors
     report = top_authors(cur, 3)
+    print(report)
+
+    # Bad days
+    report = days_high_error(cur, 0.01, 10)
     print(report)
 
     # Close the connection to db
