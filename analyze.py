@@ -6,6 +6,7 @@ A project for the Udacity Full Stack Nano Degree Program
 
 import psycopg2
 import setupdb
+import datetime
 from logs_printer import print_table
 
 
@@ -109,6 +110,9 @@ def main():
     # Create all the required views and commit changes
     setupdb.setup(cur)
     db.commit()
+
+    print('Generated on: ' + datetime.datetime.now().isoformat() + ' UTC')
+    print()
 
     # <---------------- Logs ---------------->
     # Top articles
