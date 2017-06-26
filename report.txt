@@ -1,0 +1,27 @@
+Generated on: 2017-06-26T20:04:39.514735 UTC
+
+Top Articles of All Time
+------------------------------------|----------
+              Article               |  Views   
+------------------------------------|----------
+  Candidate is jerk, alleges rival  |  342102  
+  Bears love berries, alleges bear  |  256365  
+  Bad things gone, say good people  |  171762  
+------------------------------------|----------
+
+Top Authors of All Time
+--------------------------|----------
+          Author          |  Views   
+--------------------------|----------
+  Ursula La Multa         |  512805  
+  Rudolf von Treppenwitz  |  427781  
+  Anonymous Contributor   |  171762  
+--------------------------|----------
+
+Days with High Ratio of Errors
+--------------|----------
+     Date     |  Errors  
+--------------|----------
+  2016-07-17  |  2.26%   
+--------------|----------
+
