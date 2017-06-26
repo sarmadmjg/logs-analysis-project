@@ -2,7 +2,7 @@
 """
 
 
-def print_table(headers, rows, title):
+def print_table(headers, rows, title=''):
     """Print query results with headers
 
     Args:

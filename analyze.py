@@ -6,7 +6,7 @@ A project for the Udacity Full Stack Nano Degree Program
 
 import psycopg2
 import setupdb
-import logs_printer
+from logs_printer import print_table
 
 
 def top_articles(cur, lim = -1):
@@ -103,20 +103,20 @@ def main():
     num = 3
     title = 'Top Articles of All Time'
     report = top_articles(cur, num)
-    logs_printer.table_query(report[0], report[1], title)
+    print_table(report[0], report[1], title)
 
     # Top authors
     num = 3
     title = 'Top Authors of All Time'
     report = top_authors(cur, num)
-    logs_printer.table_query(report[0], report[1], title)
+    print_table(report[0], report[1], title)
 
     # Bad days
     threashold = 0.01
     num = -1
     title = 'Days with High Ratio of Errors'
     report = days_high_error(cur, threashold, num)
-    logs_printer.table_query(report[0], report[1], title)
+    print_table(report[0], report[1], title)
 
     # Close the connection to db
     db.close()
