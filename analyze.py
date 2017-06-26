@@ -9,27 +9,29 @@ import setupdb
 from logs_printer import print_table
 
 
-def top_articles(cur, lim = -1):
+def top_articles(cur, lim=-1):
     """analyze the most visited articles
 
     Args:
         cur (cursor): a cursor connected to the news database
-        lim (int, optional): the max number of returned articles, negative numbers mean return all
+        lim (int, optional): the max number of returned articles,
+                             negative numbers mean return all
 
     Returns:
         (headers, result):
             headers (tuple): Common header names
-            result (list): The most visited articles (as tuples), sorted by views in desc order
+            result (list): The most visited articles (as tuples)
+                           sorted by views in desc order
     """
     query = """
-        select article_title, count(*) as visits from linkedlog
+        select article_title, count(*) as views from linkedlog
             group by article_title
-            order by visits desc
+            order by views desc
             {}
         """.format('limit ' + str(lim) if lim >= 0 else '')
 
     cur.execute(query)
-    headers = ('Article Title', 'Views')
+    headers = ('Article', 'Views')
     return (headers, cur.fetchall())
 
 
