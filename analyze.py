@@ -100,16 +100,23 @@ def main():
 
     # <---------------- Logs ---------------->
     # Top articles
-    report = top_articles(cur, 3)
-    tabulate.table_query(report[0], report[1])
+    num = 3
+    title = 'Top Articles of All Time'
+    report = top_articles(cur, num)
+    tabulate.table_query(report[0], report[1], title)
 
     # Top authors
-    report = top_authors(cur, 3)
-    tabulate.table_query(report[0], report[1])
+    num = 3
+    title = 'Top Authors of All Time'
+    report = top_authors(cur, num)
+    tabulate.table_query(report[0], report[1], title)
 
     # Bad days
-    report = days_high_error(cur, 0.01, 10)
-    tabulate.table_query(report[0], report[1])
+    threashold = 0.01
+    num = -1
+    title = 'Days with High Ratio of Errors'
+    report = days_high_error(cur, threashold, num)
+    tabulate.table_query(report[0], report[1], title)
 
     # Close the connection to db
     db.close()

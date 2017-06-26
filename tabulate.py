@@ -1,12 +1,16 @@
 
 
-def table_query(headers, rows):
+def table_query(headers, rows, title):
     vert_sep = '|'
     hor_sep = '-'
 
     # headers = ['Real Madrid', 'Manchester United', 'Barcelona']
     # rows = [('asdf', 'asdfeeecad', 'keidniihd'),\
     #         ('ine,c', 'iencidsid asdf aasfds93', 'eac')]
+
+    print()
+    print(title)
+    print()
 
     header_widths = [len(x) for x in headers]
 
@@ -26,7 +30,8 @@ def table_query(headers, rows):
     print(hor_line)
 
     for row in rows:
-        row_str = vert_sep.join(['{:<{width}}'.format(row[i], width=col_widths[i]) for i in range(l)])
+        row_str = vert_sep.join(['{:<{width}}'.format(str(row[i]), width=col_widths[i]) for i in range(l)])
         print(row_str)
 
     print(hor_line)
+    print()
