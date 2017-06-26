@@ -2,27 +2,24 @@
 """
 Analyze the visiting logs of a blog
 A project for the Udacity Full Stack Nano Degree Program
+
+The queries are arranged in functions and called from main
+to simplify switching queries on/off
 """
 
 import psycopg2
-import setupdb
 import datetime
-from logs_printer import print_table
 
 
-def top_articles(cur, lim=3):
+def top_articles(cur):
     """analyze the most visited articles
 
     Args:
         cur (cursor): a cursor connected to the news database
-        lim (int, optional): the max number of returned articles
-
-    Returns:
-        (headers, result):
-            headers (tuple): Common header names
-            result (list): The most visited articles (as tuples)
-                           sorted by views in desc order
     """
+
+    lim = 3
+
     query = """
         select title, count(*) as views
         from log, articles
@@ -33,8 +30,13 @@ def top_articles(cur, lim=3):
         """
 
     cur.execute(query, (lim,))
-    headers = ('Article', 'Views')
-    return (headers, cur.fetchall())
+    result = cur.fetchall()
+
+    print('All-time top articles by views:')
+    print('-------------------------------')
+    for entry in result:
+        print(entry[0] + ': ' + str(entry[1]) + ' views')
+    print()
 
 
 def top_authors(cur):
@@ -42,12 +44,6 @@ def top_authors(cur):
 
     Args:
         cur (cursor): a cursor connected to the news database
-
-    Returns:
-        (headers, result):
-                headers (tuple): Common header names
-                result (list): The top authors (as tuples)
-                               sorted by views in desc order
     """
     query = """
         select authors.name, count(*) as views
@@ -59,23 +55,23 @@ def top_authors(cur):
         """
 
     cur.execute(query)
-    headers = ('Author', 'Views')
-    return (headers, cur.fetchall())
+    result = cur.fetchall()
+
+    print('All-time top authors by views:')
+    print('------------------------------')
+    for entry in result:
+        print(entry[0] + ': ' + str(entry[1]) + ' views')
+    print()
 
 
-def days_high_error(cur, threashold=0.01):
+def days_high_error(cur):
     """Identify the days with high error ratios
 
     Args:
         cur (cursor): a cursor connected to the news database
-        threashold (float, optional): between 0.0 and 1.0
-                                 the minimum ratio of errors/total requests
-
-    Returns:
-        (headers, result):
-            headers (tuple): Common header names
-            result (list): a list of the days with high error ratio
     """
+
+    threashold = 0.01
 
     # A few remarks on this query:
     # 1---  casting the first count to float is necessary bc
@@ -94,8 +90,14 @@ def days_high_error(cur, threashold=0.01):
         """
 
     cur.execute(query, (threashold,))
-    headers = ('Date', 'Errors')
-    return (headers, cur.fetchall())
+    result = cur.fetchall()
+
+    print('Days with high error ratios:')
+    print('----------------------------')
+    for entry in result:
+        print(entry[0].strftime("%B %d, %Y") + ': ' +
+              '{0:.2f}%'.format(entry[1] * 100))
+    print()
 
 
 def main():
@@ -105,32 +107,14 @@ def main():
     db = psycopg2.connect(dbname='news')
     cur = db.cursor()
 
-    # Create all the required views and commit changes
-    setupdb.setup(cur)
-    db.commit()
-
     print('Generated on: ' + datetime.datetime.now().isoformat() + ' UTC')
     print()
 
     # <---------------- Logs ---------------->
-    # Top articles
-    num = 3
-    title = 'Top Articles of All Time'
-    report = top_articles(cur, num)
-    print_table(*report, title)
+    top_articles(cur)
+    top_authors(cur)
+    days_high_error(cur)
 
-    # Top authors
-    title = 'Top Authors of All Time'
-    report = top_authors(cur)
-    print_table(*report, title)
-
-    # Bad days
-    threashold = 0.01
-    title = 'Days with High Ratio of Errors'
-    report = days_high_error(cur, threashold)
-    print_table(*report, title)
-
-    # Close the connection to db
     db.close()
 
 
