@@ -14,9 +14,7 @@ def print_table(headers, rows, title=''):
     hor_sep = '-'
     padding = 2
 
-    print()
     print(title)
-    print()
 
     # Calculate the optimal width for each column based on the headers and data
     # These can probably fit in one line, but this is easier to debug
