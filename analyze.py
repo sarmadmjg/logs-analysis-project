@@ -4,6 +4,9 @@ Analyze the visiting logs of a blog
 A project for the Udacity Full Stack Nano Degree Program
 """
 
+import psycopg2
+import setupdb
+
 
 def top_articles(cur, lim = -1):
     """analyze the most visited articles
@@ -48,7 +51,16 @@ def days_high_error(cur, ratio = 0.01, lim = -1):
 def main():
     """The entry point of the script
     """
-    pass
+    # Establish connection to the database
+    db = psycopg2.connect(dbname='news')
+    cur = db.cursor()
+
+    # Create all the required views
+    setupdb.setup(cur)
+
+    # Close the connection to db
+    db.close()
+
 
 
 if __name__ == '__main__':
