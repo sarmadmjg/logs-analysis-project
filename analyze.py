@@ -107,7 +107,8 @@ def main():
     db = psycopg2.connect(dbname='news')
     cur = db.cursor()
 
-    print('Generated on: ' + datetime.datetime.now().isoformat() + ' UTC')
+    print('Generated on: ' +
+          datetime.datetime.now().strftime('%d %b %Y, %H:%M'))
     print()
 
     # <---------------- Logs ---------------->
