@@ -1,28 +1,27 @@
-# Log Analysis Project
+# Logs Analysis Project
 Analyze logs of a blog site.
 
 This project is part of the Udacity Full Stack Nano Degree Program
 
+## Setup
+You'll need to create the database and populate it with data (you can get the `newsdata.sql` file from [here](https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdata/newsdata.zip), unzip it and place it inside the repository folder). You need to do this once:
+```
+# clone the repository
+$ git clone https://github.com/sarmadmjg/logs-analysis-project
+$ cd logs-analysis-project
+
+# Create the news database
+$ psql -c 'create database news'
+
+# Connect and populate the db
+$ psql -d news -f newsdata.sql
+```
+
 ## Usage
 ```
-git clone https://github.com/sarmadmjg/logs-analysis-project
-cd logs-analysis-project
-python3 analyze.py
+$ python3 analyze.py
 ```
-To save the report to a file, use this instead of the third line: `python3 analyze.py > log.txt`
-
-Please note that this will only work on machines with a populated database according to the project requirements.
-
-## Views
-One view is created automatically in the script, you don't need to run the query manually. The query string is located in the setupdb.py file
+To save the report to a file, use this instead:
 ```
-create or replace view linkedlog as
-        select  log.*,
-                articles.id as article_id,
-                articles.title as article_title,
-                authors.id as author_id,
-                authors.name as author_name
-        from log, articles, authors
-        where log.path like ('/article/' || articles.slug || '%')
-              and articles.author = authors.id;
+$ python3 analyze.py > report.txt
 ```
